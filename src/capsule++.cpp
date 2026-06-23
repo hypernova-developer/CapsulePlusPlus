@@ -45,6 +45,8 @@ private:
     SimpleDHT11 dht11;
     LiquidCrystal_I2C lcd;
     CapsuleData data;
+    File logFile;
+    bool sdAvailable = false;
     unsigned long lastLogTime = 0;
     const unsigned long logInterval = 5000;
 
@@ -56,13 +58,13 @@ private:
         delay(300);
         Serial.println("   [  ] Loading Kernel...                ");
         delay(300);
-        Serial.println("   [==] Mounting SD Card (FAT32)...     ");
+        Serial.println("   [==] Mounting SD Card...              ");
         delay(300);
         Serial.println("   [====] Calibrating Environment...     ");
         delay(400);
         
         Serial.println("");
-        Serial.println("       ____                               _ ");
+        Serial.println("       ____                                _ ");
         Serial.println("      / ___|__ _ _ __  ___ _   _ | | ___  _|_| ");
         Serial.println("     | |   / _` | '_ \\/ __| | | || |/ _ \\_ _ ");
         Serial.println("     | |__| (_| | |_) \\__ \\ |_| || |  __/_|_| ");
@@ -116,18 +118,28 @@ public:
         lcd.setCursor(0, 1);
         lcd.print("Checking SD Card...");
         
-        if (!SD.begin())
+        if (!SD.begin(CapsuleSettings::SD_CS_PIN))
         {
             Serial.println("SD ERROR!");
             lcd.setCursor(0, 2);
-            lcd.print("SD ERROR! USE FAT32");
+            lcd.print("SD CARD ERROR!     ");
+            sdAvailable = false;
             delay(3000);
         }
         else
         {
-            Serial.println("SD OK.");
-            lcd.setCursor(0, 2);
-            lcd.print("SD Card: OK        ");
+            logFile = SD.open("/capsule_log.txt", FILE_APPEND);
+            if(logFile) {
+                Serial.println("SD OK & Log File Open.");
+                lcd.setCursor(0, 2);
+                lcd.print("SD & Log File: OK  ");
+                sdAvailable = true;
+            } else {
+                Serial.println("SD OK but File Open ERROR!");
+                lcd.setCursor(0, 2);
+                lcd.print("FILE OPEN ERROR!   ");
+                sdAvailable = false;
+            }
             delay(1000);
         }
         
@@ -229,9 +241,7 @@ public:
         {
             lastLogTime = millis();
 
-            File logFile = SD.open("/capsule_log.txt", FILE_APPEND);
-            
-            if (logFile)
+            if (sdAvailable && logFile)
             {
                 logFile.print(String(millis()) + ",");
                 logFile.print(String(data.temperature, 2) + ",");
@@ -240,12 +250,13 @@ public:
                 logFile.print(String(data.acidLevel) + ",");
                 logFile.print(String(data.heaterStatus) + ",");
                 logFile.println(data.systemStatus);
-                logFile.close();
-                Serial.println("Log OK.");
+                
+                logFile.flush(); 
+                Serial.println("Log OK (Appended).");
             }
             else
             {
-                Serial.println("Log ERROR!");
+                Serial.println("Log ERROR: File not open!");
             }
         }
     }
