@@ -1,8 +1,6 @@
 #include <SimpleDHT.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <FS.h>
-#include <SD.h>
 
 #define pinDHT D0
 #define pinMQAnalog A0
@@ -22,8 +20,6 @@
 #define THRESHOLD_ACID_LEAK 500
 #define THRESHOLD_POLLUTED_AIR 600
 
-#define SD_CS_PIN D10
-
 struct CapsuleData
 {
     float temperature = 0.0;
@@ -42,10 +38,6 @@ private:
     SimpleDHT11 dht11;
     LiquidCrystal_I2C lcd;
     CapsuleData data;
-    File logFile;
-    bool sdAvailable = false;
-    unsigned long lastLogTime = 0;
-    const unsigned long logInterval = 1500;
     unsigned long lastDisplayTime = 0;
     const unsigned long displayInterval = 1500;
 
@@ -57,18 +49,16 @@ private:
         delay(300);
         Serial.println("   [  ] Loading Kernel...                 ");
         delay(300);
-        Serial.println("   [==] Mounting SD Card...               ");
-        delay(300);
         Serial.println("   [====] Calibrating Environment...     ");
         delay(400);
         
         Serial.println("");
-        Serial.println("       ____                                _ ");
-        Serial.println("      / ___|__ _ _ __  ___ _   _ | | ___  _|_| ");
-        Serial.println("     | |   / _` | '_ \\/ __| | | || |/ _ \\_ _ ");
-        Serial.println("     | |__| (_| | |_) \\__ \\ |_| || |  __/_|_| ");
-        Serial.println("      \\____\\__,_| .__/|___/\\__,_||_|\\___|    ");
-        Serial.println("                |_|                          ");
+        Serial.println("        ____                                _ ");
+        Serial.println("       / ___|__ _ _ __  ___ _   _ | | ___  _|_| ");
+        Serial.println("      | |   / _` | '_ \\/ __| | | || |/ _ \\_ _ ");
+        Serial.println("      | |__| (_| | |_) \\__ \\ |_| || |  __/_|_| ");
+        Serial.println("       \\____\\__,_| .__/|___/\\__,_||_|\\___|    ");
+        Serial.println("                 |_|                          ");
         Serial.println("=========================================");
         Serial.println(" SYSTEM ONLINE - READY FOR DEPLOYMENT   ");
         Serial.println("=========================================");
@@ -111,38 +101,6 @@ public:
         ledcAttachPin(pinMotor2, pwmChannel2);
 
         showBootAnimation();
-
-        lcd.setCursor(0, 0);
-        lcd.print("Capsule++ Storage");
-        lcd.setCursor(0, 1);
-        lcd.print("Checking SD Card...");
-        
-        if (!SD.begin(SD_CS_PIN))
-        {
-            Serial.println("SD ERROR!");
-            lcd.setCursor(0, 2);
-            lcd.print("SD CARD ERROR!     ");
-            sdAvailable = false;
-            delay(3000);
-        }
-        else
-        {
-            logFile = SD.open("/capsule_log.txt", FILE_APPEND);
-            if(logFile) {
-                Serial.println("SD OK & Log File Open.");
-                lcd.setCursor(0, 2);
-                lcd.print("SD & Log File: OK  ");
-                sdAvailable = true;
-            } else {
-                Serial.println("SD OK but File Open ERROR!");
-                lcd.setCursor(0, 2);
-                lcd.print("FILE OPEN ERROR!   ");
-                sdAvailable = false;
-            }
-            delay(1000);
-        }
-        
-        lcd.clear();
     }
 
     void readSensors()
@@ -238,32 +196,6 @@ public:
             }
         }
     }
-
-    void logToSD()
-    {
-        if (millis() - lastLogTime >= logInterval)
-        {
-            lastLogTime = millis();
-
-            if (sdAvailable && logFile)
-            {
-                logFile.print(String(millis()) + ",");
-                logFile.print(String(data.temperature, 2) + ",");
-                logFile.print(String(data.humidity, 2) + ",");
-                logFile.print(String(data.gasLevel) + ",");
-                logFile.print(String(data.acidLevel) + ",");
-                logFile.print(String(data.heaterStatus) + ",");
-                logFile.println(data.systemStatus);
-                
-                logFile.flush(); 
-                Serial.println("Log OK (Appended).");
-            }
-            else
-            {
-                Serial.println("Log ERROR: File not open!");
-            }
-        }
-    }
 };
 
 PlanetCapsule capsule;
@@ -279,5 +211,4 @@ void loop()
     capsule.distillationManager();
     capsule.coolingManager();
     capsule.updateDisplay();
-    capsule.logToSD();
 }
