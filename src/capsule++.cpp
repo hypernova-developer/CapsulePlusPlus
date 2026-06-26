@@ -9,7 +9,7 @@
     - Team: InterGalactic Üyeleri
 */
 
-// Kütüphanelerin eklenmesi
+// Kütüphanelerin koda dahil edilmesi
 #include <SimpleDHT.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -20,7 +20,7 @@
 #define pinMQDigital D14
 #define pinAcidAnalog A1
 
-// Gerekli sınıf ve fonksiyonları içeren yapı
+// Gerekli sınıf ve fonksiyonları içeren namespace yapısı
 namespace CapsuleSystem
 {
     // Sınır değişkenlerinin tanımlanması
@@ -43,8 +43,8 @@ namespace CapsuleSystem
     // Gerekli metotları içeren sınıf veri yapısı
     class PlanetCapsule
     {
-    // Özel değişkenler
     private:
+        // Özel değişkenler
         SimpleDHT11 dht11;
         LiquidCrystal_I2C lcd;
         CapsuleData data;
@@ -68,14 +68,13 @@ namespace CapsuleSystem
             lcd.clear();
         }
 
-    // Açık değişkenler
     public:
         // Yapıcı fonksiyon
         PlanetCapsule() : dht11(pinDHT), lcd(0x27, 20, 4)
         {
         }
 
-        // Başlamak için metot
+        // Başlatma metodu
         void begin()
         {
             delay(2000);
@@ -96,7 +95,7 @@ namespace CapsuleSystem
             byte tempByte = 0;
             byte humidByte = 0;
             
-            // DHT11 sensöründen veriler başarıyla okunursa, sıcaklık ve nemi float türüne dönüştürüp veri yapısına kaydeder.
+            // DHT11 sensöründen verilerin başarıyla okunması durumunda, sıcaklık ve nemi float türüne dönüştürüp veri yapısına kaydedilmesi
             if (dht11.read(&tempByte, &humidByte, NULL) == SimpleDHTErrSuccess)
             {
                 data.temperature = (float)tempByte;
