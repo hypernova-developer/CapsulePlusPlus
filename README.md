@@ -9,7 +9,7 @@ Sistem; ortam sıcaklığını, nemini, zararlı gaz yoğunluğunu ve dış/iç 
 ## 🚀 Özellikler
 
 * **TIG Standartlarında Veri Yönetimi:** Tüm sensör girdileri tek bir dinamik veri yapısı (`CapsuleData`) altında güvenli bir şekilde toplanır.
-* **İsim Uzayı Koruması:** Proje mimarisi, isim çakışmalarını önleyen ve modülerliği artıran `CapsuleSystem` namespace yapısı üzerine kurulmuştur.
+* **Namespace Koruması:** Proje mimarisi, isim çakışmalarını önleyen ve modülerliği artıran `CapsuleSystem` namespace yapısı üzerine kurulmuştur.
 * **Öncelikli Durum Algoritması:** Kritik tehdit önceliklerine göre dinamik olarak güncellenen akıllı durum göstergesi (`NORMAL`, `OVERHEATING!`, `AIR FILTER MODE`, `EMERGENCY: LIQ`).
 * **Kararlı Ekran Yenileme:** Ana işlem döngüsünü bloke eden `delay()` fonksiyonları yerine, `millis()` zaman aşımı mekanizması kullanılarak akıcı bir LCD arayüzü sunulur.
 
@@ -41,7 +41,7 @@ Sistemin alarm ve mod geçişleri aşağıda belirtilen kritik sınır değerler
 
 ## 💻 Kurulum ve Bağımlılıklar
 
-Kodun sorunsuz derlenebilmesi için Arduino IDE veya PlatformIO ortamına aşağıdaki harici kütüphanelerin eklenmesi gerekmektedir:
+Kodun sorunsuz derlenebilmesi için Arduino IDE, Deneyap Kart IDE veya PlatformIO ortamına aşağıdaki harici kütüphanelerin eklenmesi gerekmektedir:
 
 1. **SimpleDHT** - DHT11 sensöründen kararlı veri okumak için.
 2. **LiquidCrystal_I2C** - I2C LCD ekran sürücüsü.
