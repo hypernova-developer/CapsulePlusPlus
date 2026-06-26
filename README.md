@@ -55,3 +55,7 @@ Kodun sorunsuz derlenebilmesi için Arduino IDE, Deneyap Kart IDE veya PlatformI
 2. **Sensör Tarama Döngüsü (`readSensors`):** Sürekli olarak analog ve dijital sensör verileri süzülerek okunur ve `CapsuleData` yapısına işlenir.
 3. **Tehdit Değerlendirmesi:** Okunan veriler en kritikten en hafife doğru (`Sıvı Teması > Gaz Tehlikesi > Aşırı Isınma`) bir mantık süzgecinden geçirilerek ana durum kodu atanır.
 4. **Asenkron Ekran Güncelleme (`updateDisplay`):** Sistem işlemcisini yormamak adına her 1500 milisaniyede bir LCD ekranındaki veriler güncellenir ve olası sıvı temaslarında anlık uyarı verilir.
+
+## 📄 Lisans
+
+Capsule++ projesinin kaynak kodları, **hypernova-developer** tarafından **GNU General Public License v3.0** ile korunmaktadır. Detaylar `LICENSE` dosyasında mevcuttur. 
