@@ -58,4 +58,4 @@ Kodun sorunsuz derlenebilmesi için Arduino IDE, Deneyap Kart IDE veya PlatformI
 
 ## 📄 Lisans
 
-Capsule++ projesinin kaynak kodları, **hypernova-developer** tarafından **GNU General Public License v3.0** ile korunmaktadır. Detaylar `LICENSE` dosyasında mevcuttur. 
+Capsule++ projesinin kaynak kodları, **hypernova-developer** tarafından **GNU General Public License v3.0** lisansı ile korunmaktadır. Detaylar `LICENSE` dosyasında mevcuttur. 
