@@ -1,3 +1,12 @@
+/*
+    Capsule++, TIG'nin Space Series başlığı altında geliştirdiği projelerden birisidir. 
+    Kaynak kodu hypernova-developer tarafından yazılmış olup bu proje GNU General Public License v3.0 ile korunmaktadır. 
+    Bu kaynak kodlardan yararlanmanız halinde yeni projenizin açık kaynaklı olarak yayınlanması bir zorunluluktur. 
+    Projede kullanılan kart Deneyap Kart 1A (ESP32 işlemcili) olup Arduino IDE veya Deneyap Kart IDE gibi bir program kullanılarak kod yüklenmesinde sakınca yoktur. 
+    Açık kaynak topluluğuna ve yeni projelere destek olması ümidiyle...
+    - Team: InterGalactic Üyeleri
+*/
+
 // Kütüphanelerin eklenmesi
 #include <SimpleDHT.h>
 #include <Wire.h>
