@@ -1,4 +1,4 @@
-// Kütüphane eklenmesi
+// Kütüphanelerin eklenmesi
 #include <SimpleDHT.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -14,7 +14,7 @@ namespace CapsuleSystem
 {
     // Sınır değişkenlerinin tanımlanması
     const float THRESHOLD_CRITICAL_TEMP = 45.0;
-    const int THRESHOLD_ACID_LEAK = 500;
+    const int THRESHOLD_LIQUID_CONTACT = 500;
     const int THRESHOLD_POLLUTED_AIR = 600;
 
     // Gerekli değişkenleri içeren veri yapısı
@@ -24,8 +24,8 @@ namespace CapsuleSystem
         float humidity = 0.0;
         int gasLevel = 0;
         bool gasDanger = false;
-        int acidLevel = 0;
-        bool acidLeakDetected = false;
+        int liquidLevel = 0;
+        bool liquidContactDetected = false;
         String systemStatus = "NORMAL";
     };
 
@@ -95,13 +95,13 @@ namespace CapsuleSystem
             // Alınan değerlerin değişkenlere kaydedilmesi
             data.gasLevel = analogRead(pinMQAnalog);
             data.gasDanger = digitalRead(pinMQDigital) == HIGH || (data.gasLevel > THRESHOLD_POLLUTED_AIR);
-            data.acidLevel = analogRead(pinAcidAnalog);
-            data.acidLeakDetected = data.acidLevel > THRESHOLD_ACID_LEAK;
+            data.liquidLevel = analogRead(pinAcidAnalog);
+            data.liquidContactDetected = data.liquidLevel > THRESHOLD_LIQUID_CONTACT;
 
             // Durumlara göre modun ekrana yansıtılması
-            if (data.acidLeakDetected)
+            if (data.liquidContactDetected)
             {
-                data.systemStatus = "EMERGENCY: ACID";
+                data.systemStatus = "EMERGENCY: LIQ";
             }
             else if (data.gasDanger)
             {
@@ -136,22 +136,22 @@ namespace CapsuleSystem
 
                 // Gaz seviyesinin gösterilmesi
                 lcd.setCursor(0, 2);
-                lcd.print("Gas Level: " + String(data.gasLevel) + "      ");
+                lcd.print("Gas Level: " + String(data.gasLevel) + "       ");
 
                 // LCD'de imlecin bir alt satıra geçirilmesi
                 lcd.setCursor(0, 3);
                 
-                // Asit tespit edildiyse...
-                if (data.acidLeakDetected)
+                // Sıvı ile temas edildiyse...
+                if (data.liquidContactDetected)
                 {
-                    // Asit sızıntısının tespit edildiği ekrana yazdırılır.
-                    lcd.print("ACID LEAK DETECTED!! ");
+                    // Sıvının tespit edildiğinin ekrana yazdırılması
+                    lcd.print("LIQUID DETECTED!!!  ");
                 }
-                // Asit tespit edilmediysa...
+                // Sıvı ile temas edilmediyse...
                 else
                 {
-                    // Asit seviyesi ekrana yazdırılır.
-                    lcd.print("Acid/Liq: " + String(data.acidLevel) + " [OK]  ");
+                    // Sıvı seviyesinin ekrana yazdırılması
+                    lcd.print("Liquid/Liq: " + String(data.liquidLevel) + " [OK] ");
                 }
             }
         }
