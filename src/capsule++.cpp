@@ -1,18 +1,23 @@
+// Kütüphane eklenmesi
 #include <SimpleDHT.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+// Pinlerin tanımlanması
 #define pinDHT D0
 #define pinMQAnalog A0
 #define pinMQDigital D14
 #define pinAcidAnalog A1
 
+// Gerekli sınıf ve fonksiyonları içeren yapı
 namespace CapsuleSystem
 {
+    // Sınır değişkenlerinin tanımlanması
     const float THRESHOLD_CRITICAL_TEMP = 45.0;
     const int THRESHOLD_ACID_LEAK = 500;
     const int THRESHOLD_POLLUTED_AIR = 600;
 
+    // Gerekli değişkenleri içeren veri yapısı
     struct CapsuleData
     {
         float temperature = 0.0;
@@ -24,8 +29,10 @@ namespace CapsuleSystem
         String systemStatus = "NORMAL";
     };
 
+    // Gerekli metotları içeren sınıf veri yapısı
     class PlanetCapsule
     {
+    // Özel değişkenler
     private:
         SimpleDHT11 dht11;
         LiquidCrystal_I2C lcd;
@@ -33,6 +40,7 @@ namespace CapsuleSystem
         unsigned long lastDisplayTime = 0;
         const unsigned long displayInterval = 1500;
 
+        // Açılış ekranındaki animasyon
         void showBootAnimation()
         {
             lcd.setCursor(4, 0);
@@ -49,11 +57,14 @@ namespace CapsuleSystem
             lcd.clear();
         }
 
+    // Açık değişkenler
     public:
+        // Yapıcı fonksiyon
         PlanetCapsule() : dht11(pinDHT), lcd(0x27, 20, 4)
         {
         }
 
+        // Başlamak için metot
         void begin()
         {
             delay(2000);
@@ -67,22 +78,27 @@ namespace CapsuleSystem
             showBootAnimation();
         }
 
+        // Sensörlerden alınan verilerin okunmasını sağlayan metot
         void readSensors()
         {
+            // Değişkenlerin tanımlanması
             byte tempByte = 0;
             byte humidByte = 0;
             
+            // DHT11 sensöründen veriler başarıyla okunursa, sıcaklık ve nemi float türüne dönüştürüp veri yapısına kaydeder.
             if (dht11.read(&tempByte, &humidByte, NULL) == SimpleDHTErrSuccess)
             {
                 data.temperature = (float)tempByte;
                 data.humidity = (float)humidByte;
             }
 
+            // Alınan değerlerin değişkenlere kaydedilmesi
             data.gasLevel = analogRead(pinMQAnalog);
             data.gasDanger = digitalRead(pinMQDigital) == HIGH || (data.gasLevel > THRESHOLD_POLLUTED_AIR);
             data.acidLevel = analogRead(pinAcidAnalog);
             data.acidLeakDetected = data.acidLevel > THRESHOLD_ACID_LEAK;
 
+            // Durumlara göre modun ekrana yansıtılması
             if (data.acidLeakDetected)
             {
                 data.systemStatus = "EMERGENCY: ACID";
@@ -101,43 +117,57 @@ namespace CapsuleSystem
             }
         }
 
+        // Ekranın yenilenmesi
         void updateDisplay()
         {
+            // Zaman aşımının kontrol edilmesi
             if (millis() - lastDisplayTime >= displayInterval)
             {
+                // Son görüntülenme süresine fonksiyondan döndürülen değerin kaydedilmesi
                 lastDisplayTime = millis();
 
+                // LCD'de birinci satıra dönülmesi
                 lcd.setCursor(0, 0);
                 lcd.print("CP++: " + data.systemStatus.substring(0, 14)); 
                 
+                // Sıcaklık ve nem değerlerinin ekrana girilmesi
                 lcd.setCursor(0, 1);
                 lcd.print("T:" + String(data.temperature, 1) + "C  H:%" + String(data.humidity, 0) + "   ");
 
+                // Gaz seviyesinin gösterilmesi
                 lcd.setCursor(0, 2);
                 lcd.print("Gas Level: " + String(data.gasLevel) + "      ");
 
+                // LCD'de imlecin bir alt satıra geçirilmesi
                 lcd.setCursor(0, 3);
                 
+                // Asit tespit edildiyse...
                 if (data.acidLeakDetected)
                 {
+                    // Asit sızıntısının tespit edildiği ekrana yazdırılır.
                     lcd.print("ACID LEAK DETECTED!! ");
                 }
+                // Asit tespit edilmediysa...
                 else
                 {
+                    // Asit seviyesi ekrana yazdırılır.
                     lcd.print("Acid/Liq: " + String(data.acidLevel) + " [OK]  ");
                 }
             }
         }
     };
 
+    // PlanetCapsule sınıfından capsule nesnesinin türetilmesi
     PlanetCapsule capsule;
 }
 
+// capsule nesnesinin başlatma fonksiyonunun tetiklenmesi
 void setup()
 {
     CapsuleSystem::capsule.begin();
 }
 
+// capsule nesnesinin sensör okuma ve ekranı güncelleme ile ilgili metotlarını içeren döngü halinde sürekli yenilenecek olan fonksiyon kod bloğu
 void loop()
 {
     CapsuleSystem::capsule.readSensors();
