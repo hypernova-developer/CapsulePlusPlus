@@ -3,6 +3,8 @@
     Kaynak kodu hypernova-developer tarafından yazılmış olup bu proje GNU General Public License v3.0 ile korunmaktadır. 
     Bu kaynak kodlardan yararlanmanız halinde yeni projenizin açık kaynaklı olarak yayınlanması bir zorunluluktur. 
     Projede kullanılan kart Deneyap Kart 1A (ESP32 işlemcili) olup Arduino IDE veya Deneyap Kart IDE gibi bir program kullanılarak kod yüklenmesinde sakınca yoktur. 
+    Bize imkan tamıyan, her şekilde destek olan T3 Vakfı ekibine ve öğrenci arkadaşlarımıza teşekkür ederiz. 
+    Rakiplerimize başarılar dileriz. 
     Açık kaynak topluluğuna ve yeni projelere destek olması ümidiyle...
     - Team: InterGalactic Üyeleri
 */
